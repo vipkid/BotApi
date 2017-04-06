@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{BB4B7E42-7320-4899-9480-692527648B55}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BotApi</RootNamespace>
+    <AssemblyName>BotApi</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Brain.cs" />
+    <Compile Include="CLI\CommandLineParser.cs" />
+    <Compile Include="CLI\FlagSet.cs" />
+    <Compile Include="Commands\Attributes\CommandExecutorAttribute.cs" />
+    <Compile Include="Commands\Attributes\CommandParameterAttribute.cs" />
+    <Compile Include="Commands\CommandBase.cs" />
+    <Compile Include="Commands\CommandContext.cs" />
+    <Compile Include="Commands\CommandMetadata.cs" />
+    <Compile Include="Commands\CommandRegistry.cs" />
+    <Compile Include="Commands\CommandResult.cs" />
+    <Compile Include="Commands\CommandStatus.cs" />
+    <Compile Include="Commands\EnvironmentContext.cs" />
+    <Compile Include="Commands\Exceptions\CommandException.cs" />
+    <Compile Include="Commands\Exceptions\CommandParsingException.cs" />
+    <Compile Include="Commands\Interfaces\ICommand.cs" />
+    <Compile Include="Commands\Interfaces\IEnvironmentContext.cs" />
+    <Compile Include="Commands\Interfaces\ICommandFormatVerifier.cs" />
+    <Compile Include="Commands\Interfaces\ICommandParser.cs" />
+    <Compile Include="Commands\Interfaces\IObjectConverter.cs" />
+    <Compile Include="Commands\Parsing\CommandFormatVerifier.cs" />
+    <Compile Include="Commands\Parsing\CommandParser.cs" />
+    <Compile Include="Commands\Parsing\ObjectConverters\IntArrayObjectConverter.cs" />
+    <Compile Include="Commands\Parsing\ObjectConverters\IntObjectConverter.cs" />
+    <Compile Include="Commands\Parsing\ObjectConverters\StringArrayObjectConverter.cs" />
+    <Compile Include="Commands\Parsing\ObjectConverters\StringObjectConverter.cs" />
+    <Compile Include="Commands\Parsing\ParserResult.cs" />
+    <Compile Include="Commands\Permissions\PermissionSet.cs" />
+    <Compile Include="IConnectionModule.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Utilities\Utilities.csproj">
+      <Project>{fc56363e-8131-4d41-952b-6a70b3d8e775}</Project>
+      <Name>Utilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WebSocketting\WebSocketting.csproj">
+      <Project>{89e47b07-912e-4b0b-b825-1b0ff73b3c6b}</Project>
+      <Name>WebSocketting</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
