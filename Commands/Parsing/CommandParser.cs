@@ -75,7 +75,7 @@ namespace BotApi.Commands.Parsing
 			return metadata;
 		}
 
-		public ParserResult<T> PrepareCommand<T>(IEnumerable<string> arguments, CommandMetadata metadata, CommandRegistry registry, IEnvironmentContext ctx, T responseTo, out CommandParsingException ex)
+		public ParserResult<T> PrepareCommand<T>(IEnumerable<string> arguments, CommandMetadata metadata, CommandRegistry registry, EnvironmentContext ctx, T responseTo, out CommandParsingException ex)
 		{
 			ParserResult<T> result = new ParserResult<T>();
 
@@ -89,6 +89,19 @@ namespace BotApi.Commands.Parsing
 			{
 				ex = new CommandParsingException(ParserFailReason.InvalidArguments, $"Insuffucient arguments provided. Command {metadata.TypeName} requires {metadata.RequiredArguments} {"argument".Pluralise(metadata.RequiredArguments)} but was provided with {arguments.Count()}.");
 				return null;
+			}
+
+			if (arguments.Count() > 0 && metadata.HasSubcommands)
+			{
+				//Find the first subcommand with an alias that matches the first argument
+				CommandMetadata subData = metadata.SubcommandMetadata.FirstOrDefault(m => m.Aliases.Contains(arguments.First().ToLowerInvariant()));
+				if (subData != null)
+				{
+					//Metadata is now the subcommand
+					metadata = subData;
+					//Arguments have the subcommand name removed
+					arguments = arguments.Skip(1);
+				}
 			}
 
 			List<object> parseResult = ParseArguments(ctx, arguments, metadata, responseTo, out CommandParsingException pEx);
@@ -121,7 +134,7 @@ namespace BotApi.Commands.Parsing
 		/// <param name="arguments"></param>
 		/// <param name="metadata"></param>
 		/// <returns></returns>
-		private List<object> ParseArguments<T>(IEnvironmentContext ctx, IEnumerable<string> arguments, CommandMetadata metadata, T responseTo, out CommandParsingException ex)
+		private List<object> ParseArguments<T>(EnvironmentContext ctx, IEnumerable<string> arguments, CommandMetadata metadata, T responseTo, out CommandParsingException ex)
 		{
 			List<object> objects = new List<object>() { ctx };
 			int index = 0;
@@ -129,9 +142,8 @@ namespace BotApi.Commands.Parsing
 			foreach (KeyValuePair<ParameterInfo, CommandParameterAttribute> kvp in metadata.ParameterData)
 			{
 				//Get the number of arguments going in to the parameter
-				int count = kvp.Value.Repetitions <= 0
-				? arguments.Count() - index
-				: kvp.Value.Repetitions;
+				int count = kvp.Value.Repetitions <= 0 ? arguments.Count() - index
+														: kvp.Value.Repetitions;
 
 				if (index >= arguments.Count())
 				{
@@ -163,7 +175,7 @@ namespace BotApi.Commands.Parsing
 					if (conversion == null)
 					{
 						ex = new CommandParsingException(
-							ParserFailReason.ParsingFailed, 
+							ParserFailReason.ParsingFailed,
 							$"Type conversion failed: Failed to convert '{string.Join(" ", args)}' to Type '{ kvp.Key.ParameterType.Name }'.",
 							new Exception($"Conversion failed in '{converter.GetType().Name}.'")
 						);
@@ -186,7 +198,7 @@ namespace BotApi.Commands.Parsing
 		/// <param name="type"></param>
 		/// <param name="arguments"></param>
 		/// <returns></returns>
-		private object ConvertType<T>(Type type, string[] arguments, IEnvironmentContext ctx, T responseTo, out CommandParsingException ex)
+		private object ConvertType<T>(Type type, string[] arguments, EnvironmentContext ctx, T responseTo, out CommandParsingException ex)
 		{
 			string rejectionStr = $"failed to create an instance of {type.Name} from arguments '{string.Join(" ", arguments)}'.";
 
@@ -246,7 +258,7 @@ namespace BotApi.Commands.Parsing
 		/// <param name="type"></param>
 		/// <param name="arguments"></param>
 		/// <returns></returns>
-		private Array CreateArray<T>(Type type, string[] arguments, IEnvironmentContext ctx, T responseTo, out CommandParsingException ex)
+		private Array CreateArray<T>(Type type, string[] arguments, EnvironmentContext ctx, T responseTo, out CommandParsingException ex)
 		{
 			IObjectConverter elementConverter = null;
 			Type elementType = type.GetElementType();
@@ -270,7 +282,7 @@ namespace BotApi.Commands.Parsing
 					if (conversion == null)
 					{
 						ex = new CommandParsingException(
-							ParserFailReason.ParsingFailed, 
+							ParserFailReason.ParsingFailed,
 							failedConvert,
 							new Exception($"Conversion failed by '{elementConverter.GetType().Name}.'")
 						);

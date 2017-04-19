@@ -6,7 +6,7 @@ namespace BotApi.Commands.Parsing.ObjectConverters
 {
 	public class IntArrayObjectConverter : IObjectConverter
 	{
-		public object ConvertFromArray<T>(string[] arguments, IEnvironmentContext ctx, T responseTo)
+		public object ConvertFromArray<T>(string[] arguments, EnvironmentContext ctx, T responseTo)
 		{
 			int[] array = new int[arguments.Length];
 
@@ -22,7 +22,7 @@ namespace BotApi.Commands.Parsing.ObjectConverters
 			return array;
 		}
 
-		public object ConvertFromString<T>(string argument, IEnvironmentContext ctx, T responseTo)
+		public object ConvertFromString<T>(string argument, EnvironmentContext ctx, T responseTo)
 		{
 			List<string> arguments = argument.Explode();
 			int[] array = new int[arguments.Count];

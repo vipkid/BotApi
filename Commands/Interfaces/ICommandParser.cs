@@ -62,6 +62,6 @@ namespace BotApi.Commands.Interfaces
 		/// <param name="ctx">The environment context passed to the command</param>
 		/// <param name="responseTo">The object the command is responding to</param>
 		/// <returns></returns>
-		ParserResult<T> PrepareCommand<T>(IEnumerable<string> arguments, CommandMetadata metadata, CommandRegistry registry, IEnvironmentContext ctx, T responseTo, out CommandParsingException ex);
+		ParserResult<T> PrepareCommand<T>(IEnumerable<string> arguments, CommandMetadata metadata, CommandRegistry registry, EnvironmentContext ctx, T responseTo, out CommandParsingException ex);
 	}
 }

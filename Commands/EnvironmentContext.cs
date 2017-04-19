@@ -3,7 +3,10 @@ using System;
 
 namespace BotApi.Commands
 {
-	public class EnvironmentContext : MarshalByRefObject, IEnvironmentContext
+	/// <summary>
+	/// Contains references to objects that may prove useful in the execution of a command
+	/// </summary>
+	public class EnvironmentContext : IEnvironmentContext
 	{
 		/// <summary>
 		/// <see cref="ICommandParser"/> used when parsing commands
@@ -14,6 +17,11 @@ namespace BotApi.Commands
 		/// </summary>
 		public CommandRegistry Registry { get; set; }
 
+		/// <summary>
+		/// Generates a new <see cref="EnvironmentContext"/> with the given command parser and registry
+		/// </summary>
+		/// <param name="parser"></param>
+		/// <param name="registry"></param>
 		public EnvironmentContext(ICommandParser parser, CommandRegistry registry)
 		{
 			Parser = parser;

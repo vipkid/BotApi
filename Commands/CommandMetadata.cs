@@ -1,6 +1,7 @@
 ﻿using BotApi.Commands.Attributes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace BotApi.Commands
@@ -34,19 +35,29 @@ namespace BotApi.Commands
 		/// Aliases the command can be executed with
 		/// </summary>
 		public IEnumerable<string> Aliases { get; private set; }
+		/// <summary>
+		/// Metadata for each subcommand defined on this command
+		/// </summary>
+		public IEnumerable<CommandMetadata> SubcommandMetadata { get; private set; }
+		/// <summary>
+		/// Whether or not this command has subcommands
+		/// </summary>
+		public bool HasSubcommands => SubcommandMetadata != null && SubcommandMetadata.Count() > 0;
 
 		public CommandMetadata(
 			MethodInfo executor,
 			Type type, 
 			int reqArgs,
 			IEnumerable<string> aliases,
-			Dictionary<ParameterInfo, CommandParameterAttribute> paramData)
+			Dictionary<ParameterInfo, CommandParameterAttribute> paramData,
+			IEnumerable<CommandMetadata> subcommandMetadata)
 		{
 			ParameterData = paramData;
 			ExecutingMethod = executor;
 			Type = type;
 			RequiredArguments = reqArgs;
 			Aliases = aliases;
+			SubcommandMetadata = subcommandMetadata;
 		}
     }
 }

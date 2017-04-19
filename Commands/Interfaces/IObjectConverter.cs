@@ -10,13 +10,13 @@
 		/// </summary>
 		/// <param name="arguments"></param>
 		/// <returns></returns>
-		object ConvertFromArray<T>(string[] arguments, IEnvironmentContext context, T responseTo);
+		object ConvertFromArray<T>(string[] arguments, EnvironmentContext context, T responseTo);
 
 		/// <summary>
 		/// Converts a single string to an object
 		/// </summary>
 		/// <param name="argument"></param>
 		/// <returns></returns>
-		object ConvertFromString<T>(string argument, IEnvironmentContext context, T responseTo);
+		object ConvertFromString<T>(string argument, EnvironmentContext context, T responseTo);
     }
 }

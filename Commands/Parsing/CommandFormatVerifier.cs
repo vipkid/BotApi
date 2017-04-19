@@ -20,8 +20,8 @@ namespace BotApi.Commands
 		/// * An optional parameter may not come before a required parameter
 		/// * An unknown length parameter must not be followed by any parameters.
 		/// Further, a command must return a <see cref="CommandResult"/> or <see cref="Task{CommandResult}"/> and its first
-		/// executor method parameter must be of type <see cref="IEnvironmentContext"/>.
-		/// The command class must contain at least one method with a <see cref="CommandExecutorAttribute"/> or <see cref="CommandExecutorAsyncAttribute"/>.
+		/// executor method parameter must be of type <see cref="EnvironmentContext"/>.
+		/// The command class must contain at least one method with a <see cref="CommandExecutorAttribute"/>.
 		/// </summary>
 		/// <param name="command"></param>
 		/// <param name="ex"></param>
@@ -33,11 +33,13 @@ namespace BotApi.Commands
 				ex = new CommandParsingException(ParserFailReason.IncorrectType, $"Cannot assign type '{type.Name}' to type '{nameof(ICommand)}'.");
 				return null;
 			}
-			
+
 			MethodInfo executor;
 			try
 			{
-				executor = type.GetRuntimeMethods().First(m => m.GetCustomAttribute<CommandExecutorAttribute>() != null);
+				executor = type.GetRuntimeMethods().First(
+					m => m.GetCustomAttribute<CommandExecutorAttribute>() != null
+				);
 			}
 			catch (Exception e)
 			{
@@ -49,29 +51,97 @@ namespace BotApi.Commands
 				return null;
 			}
 
-			if (executor.ReturnType != typeof(Task<CommandResult>))
+			if (!EnsureMethodStructure(executor, type, out ex))
+			{
+				//Fail on bad method structure
+				return null;
+			}
+			
+			Dictionary<ParameterInfo, CommandParameterAttribute> paramData = ParseParameters(executor.GetParameters().Skip(1), out int argCount, out ex);
+			if (paramData == null)
+			{
+				//Fail on bad parameters
+				return null;
+			}
+
+			IEnumerable<MethodInfo> subExecutors = type.GetRuntimeMethods().Where(
+				m => m.GetCustomAttribute<CommandSubExecutorAttribute>() != null
+			);
+
+			List<CommandMetadata> subMetadata = new List<CommandMetadata>();
+
+			//Check every sub-executor's parameters
+			foreach (MethodInfo info in subExecutors)
+			{
+				if (!EnsureMethodStructure(info, type, out ex))
+				{
+					//Fail on bad method structure
+					return null;
+				}
+
+				Dictionary<ParameterInfo, CommandParameterAttribute> subParamData = ParseParameters(info.GetParameters().Skip(1), out int subArgCount, out ex);
+				if (subParamData == null)
+				{
+					//Fail on bad parameters
+					return null;
+				}
+				subMetadata.Add(new CommandMetadata(info, type, subArgCount, info.GetCustomAttribute<CommandSubExecutorAttribute>().SubCommands, subParamData, null));
+			}
+
+			return new CommandMetadata(executor, type, argCount, aliases, paramData, subMetadata);
+		}
+
+		/// <summary>
+		/// Ensures a method conforms to some simple rules.
+		/// An executor must:
+		/// * Return <see cref="Task{CommandResult}"/>
+		/// * Have at least 1 parameter which is of type <see cref="EnvironmentContext"/> or a child class thereof
+		/// </summary>
+		/// <param name="info"></param>
+		/// <param name="type"></param>
+		/// <param name="ex"></param>
+		/// <returns></returns>
+		private bool EnsureMethodStructure(MethodInfo info, Type type, out CommandParsingException ex)
+		{
+			//Method must return Task<CommandResult>
+			if (info.ReturnType != typeof(Task<CommandResult>))
 			{
 				ex = new CommandParsingException(
 					ParserFailReason.MalformedExecutor,
 					$"Executor of command '{type.Name}' does not return '{nameof(Task)}<{nameof(CommandResult)}>'."
 				);
-				return null;
+				return false;
 			}
 
-			if (executor.GetParameters().Length < 1 || !typeof(IEnvironmentContext).IsAssignableFrom(executor.GetParameters()[0].ParameterType))
+			//Method must have at least 1 parameter which is an EnvironmentContext (or derivative thereof)
+			if (info.GetParameters().Length < 1 || !typeof(EnvironmentContext).IsAssignableFrom(info.GetParameters()[0].ParameterType))
 			{
 				ex = new CommandParsingException(
 					ParserFailReason.MalformedExecutor,
-					$"Executor of command '{type.Name}' does not have '{nameof(IEnvironmentContext)}' as its first parameter."
+					$"Executor of command '{type.Name}' does not have '{nameof(EnvironmentContext)}' as its first parameter."
 				);
-				return null;
+				return false;
 			}
 
+			ex = null;
+			return true;
+		}
+
+		/// <summary>
+		/// Ensures that the parameters on an executing method are valid
+		/// </summary>
+		/// <param name="parameters"></param>
+		/// <param name="args"></param>
+		/// <param name="ex"></param>
+		/// <returns></returns>
+		private Dictionary<ParameterInfo, CommandParameterAttribute> ParseParameters(IEnumerable<ParameterInfo> parameters, out int args, out CommandParsingException ex)
+		{
 			bool optionalFound = false;
 			bool unknownLengthFound = false;
-			int requiredArguments = 0;
+			args = 0;
 			Dictionary<ParameterInfo, CommandParameterAttribute> paramData = new Dictionary<ParameterInfo, CommandParameterAttribute>();
-			foreach (ParameterInfo param in executor.GetParameters().Skip(1)) //Skip 1 as the first parameter is the environment context
+
+			foreach (ParameterInfo param in parameters) //Skip 1 as the first parameter is the environment context
 			{
 				CommandParameterAttribute attr = param.GetCustomAttribute<CommandParameterAttribute>();
 
@@ -107,16 +177,16 @@ namespace BotApi.Commands
 				if (attr.Repetitions < 1)
 				{
 					unknownLengthFound = true;
-					requiredArguments = -1;
+					args = -1;
 				}
 				if (!attr.Optional)
 				{
-					requiredArguments += attr.Repetitions;
+					args += attr.Repetitions;
 				}
 			}
 
 			ex = null;
-			return new CommandMetadata(executor, type, requiredArguments, aliases, paramData);
+			return paramData;
 		}
 	}
 }

@@ -60,7 +60,7 @@ namespace BotApi.Commands
 		/// <param name="ctx">EnvironmentContext to be provided to the command</param>
 		/// <param name="responseTo">The object which caused the command to be invoked</param>
 		/// <returns></returns>
-		public async Task<CommandResult> RunCommandAsync<T>(string input, string trigger, IEnvironmentContext ctx, T responseTo)
+		public async Task<CommandResult> RunCommandAsync<T>(string input, string trigger, EnvironmentContext ctx, T responseTo)
 		{
 			if (string.IsNullOrWhiteSpace(input))
 			{

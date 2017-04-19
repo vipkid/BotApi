@@ -21,7 +21,7 @@ namespace BotApi.Commands
 		/// <summary>
 		/// The object which caused this command to be invoked
 		/// </summary>
-		public T ResponseObject { get; internal set; }
+		public T ResponseObject { get; set; }
 		/// <summary>
 		/// The permissions required to use the command
 		/// </summary>

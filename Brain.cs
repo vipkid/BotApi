@@ -54,7 +54,7 @@ namespace BotApi
 		}
 
 		/// <summary>
-		/// Sets the <see cref="IEnvironmentContext"/> used by commands
+		/// Sets the <see cref="EnvironmentContext"/> used by commands
 		/// </summary>
 		/// <param name="context"></param>
 		public void SetContext(EnvironmentContext context)

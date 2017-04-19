@@ -49,6 +49,7 @@
     <Compile Include="CLI\FlagSet.cs" />
     <Compile Include="Commands\Attributes\CommandExecutorAttribute.cs" />
     <Compile Include="Commands\Attributes\CommandParameterAttribute.cs" />
+    <Compile Include="Commands\Attributes\CommandSubExecutorAttribute.cs" />
     <Compile Include="Commands\CommandBase.cs" />
     <Compile Include="Commands\CommandContext.cs" />
     <Compile Include="Commands\CommandMetadata.cs" />
