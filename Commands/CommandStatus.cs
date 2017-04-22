@@ -16,6 +16,10 @@
 		/// <summary>
 		/// The command failed to execute
 		/// </summary>
-		Error
+		Error,
+		/// <summary>
+		/// The command was not executed
+		/// </summary>
+		NoExecution
 	}
 }

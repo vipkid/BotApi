@@ -12,6 +12,10 @@ namespace BotApi.Commands
 	public class CommandMetadata
     {
 		/// <summary>
+		/// Whether or not the metadata should be reused when the command is run
+		/// </summary>
+		public bool UseMetadataCaching { get; set; } = true;
+		/// <summary>
 		/// The method that will be called when the command is executed
 		/// </summary>
 		public MethodInfo ExecutingMethod { get; private set; }
@@ -32,6 +36,10 @@ namespace BotApi.Commands
 		/// </summary>
 		public string TypeName => Type.Name;
 		/// <summary>
+		/// A message describing this command
+		/// </summary>
+		public string Description { get; set; }
+		/// <summary>
 		/// Aliases the command can be executed with
 		/// </summary>
 		public IEnumerable<string> Aliases { get; private set; }
@@ -49,6 +57,7 @@ namespace BotApi.Commands
 			Type type, 
 			int reqArgs,
 			IEnumerable<string> aliases,
+			string description,
 			Dictionary<ParameterInfo, CommandParameterAttribute> paramData,
 			IEnumerable<CommandMetadata> subcommandMetadata)
 		{
@@ -57,6 +66,7 @@ namespace BotApi.Commands
 			Type = type;
 			RequiredArguments = reqArgs;
 			Aliases = aliases;
+			Description = description;
 			SubcommandMetadata = subcommandMetadata;
 		}
     }

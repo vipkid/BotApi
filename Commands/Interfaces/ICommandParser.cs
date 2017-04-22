@@ -26,7 +26,7 @@ namespace BotApi.Commands.Interfaces
 		/// <param name="commandType"></param>
 		/// <param name="ex"></param>
 		/// <returns></returns>
-		CommandMetadata RegisterMetadata(Type commandType, IEnumerable<string> aliases, out CommandException ex);
+		CommandMetadata RegisterMetadata(Type commandType, IEnumerable<string> aliases, string description, out CommandException ex);
 
 		/// <summary>
 		/// Registers a converter for converting strings to strongly typed objects

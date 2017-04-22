@@ -26,7 +26,7 @@ namespace BotApi.Commands
 		/// <param name="command"></param>
 		/// <param name="ex"></param>
 		/// <returns></returns>
-		public CommandMetadata TryVerifyFormat(Type type, IEnumerable<string> aliases, out CommandParsingException ex)
+		public CommandMetadata TryVerifyFormat(Type type, IEnumerable<string> aliases, string description, out CommandParsingException ex)
 		{
 			if (!typeof(ICommand).IsAssignableFrom(type))
 			{
@@ -85,10 +85,10 @@ namespace BotApi.Commands
 					//Fail on bad parameters
 					return null;
 				}
-				subMetadata.Add(new CommandMetadata(info, type, subArgCount, info.GetCustomAttribute<CommandSubExecutorAttribute>().SubCommands, subParamData, null));
+				subMetadata.Add(new CommandMetadata(info, type, subArgCount, info.GetCustomAttribute<CommandSubExecutorAttribute>().SubCommands, description, subParamData, null));
 			}
 
-			return new CommandMetadata(executor, type, argCount, aliases, paramData, subMetadata);
+			return new CommandMetadata(executor, type, argCount, aliases, description, paramData, subMetadata);
 		}
 
 		/// <summary>

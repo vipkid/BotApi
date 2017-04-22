@@ -22,15 +22,15 @@ namespace BotApi.Commands.Parsing
 			Converters = new Dictionary<Type, IObjectConverter>();
 		}
 
-		public CommandMetadata RegisterMetadata(Type commandType, IEnumerable<string> aliases, out CommandException exception)
+		public CommandMetadata RegisterMetadata(Type commandType, IEnumerable<string> aliases, string description, out CommandException exception)
 		{
 			CommandMetadata metadata;
-			if ((metadata = Verifier.TryVerifyFormat(commandType, aliases, out var ex)) == null)
+			if ((metadata = Verifier.TryVerifyFormat(commandType, aliases, description, out CommandParsingException ex)) == null)
 			{
 				exception = ex;
 				return null;
 			}
-
+			
 			exception = null;
 			return metadata;
 		}
@@ -53,25 +53,12 @@ namespace BotApi.Commands.Parsing
 
 		public IEnumerable<CommandMetadata> GetMetadataFromInput(string input, string trigger, CommandRegistry registry, out IEnumerable<string> arguments)
 		{
-			if (string.IsNullOrWhiteSpace(input))
-			{
-				arguments = null;
-				return null;
-			}
-
+			//Remove the command name
 			input = input.Remove(0, trigger.Length);
-			if (string.IsNullOrWhiteSpace(input))
-			{
-				arguments = null;
-				return null;
-			}
+			//And explode any other input into arguments
+			arguments = input.Explode();
 
-			List<string> args = input.Explode();
-
-			//Skip(1) to remove the command name
-			arguments = args.Skip(1);
-
-			IEnumerable<CommandMetadata> metadata = registry.GetMetadatas(args[0]);
+			IEnumerable<CommandMetadata> metadata = registry.GetMetadatas(trigger);
 			return metadata;
 		}
 
@@ -112,6 +99,7 @@ namespace BotApi.Commands.Parsing
 			}
 
 			result.Arguments = parseResult;
+
 			if (_commandCache.ContainsKey(metadata))
 			{
 				result.Command = (CommandBase<T>)_commandCache[metadata];
@@ -119,8 +107,14 @@ namespace BotApi.Commands.Parsing
 			else
 			{
 				result.Command = (CommandBase<T>)Activator.CreateInstance(metadata.Type);
-				_commandCache.Add(metadata, result.Command);
+
+				if (metadata.UseMetadataCaching)
+				{
+					_commandCache.Add(metadata, result.Command);
+				}
 			}
+
+			result.Command.Metadata = metadata;
 			result.Command.ResponseObject = responseTo;
 
 			ex = null;

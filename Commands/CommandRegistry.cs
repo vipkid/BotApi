@@ -38,13 +38,14 @@ namespace BotApi.Commands
 		/// <param name="e">CommandException that may occur while parsing the command type</param>
 		/// <param name="cctorArgs">Any constructor arguments used to construct the command</param>
 		/// <returns>true if registration succeeds</returns>
-		public bool RegisterCommand(Type commandType, IEnumerable<string> aliases, out CommandException e)
+		public bool RegisterCommand(Type commandType, IEnumerable<string> aliases, string description, out CommandException e, bool cached = true)
 		{
 			CommandMetadata metadata;
-			if ((metadata = Parser.RegisterMetadata(commandType, aliases, out e)) == null)
+			if ((metadata = Parser.RegisterMetadata(commandType, aliases, description, out e)) == null)
 			{
 				return false;
 			}
+			metadata.UseMetadataCaching = cached;
 
 			_commands.Add(metadata);
 			e = null;
@@ -60,15 +61,26 @@ namespace BotApi.Commands
 		/// <param name="ctx">EnvironmentContext to be provided to the command</param>
 		/// <param name="responseTo">The object which caused the command to be invoked</param>
 		/// <returns></returns>
-		public async Task<CommandResult> RunCommandAsync<T>(string input, string trigger, EnvironmentContext ctx, T responseTo)
+		public async Task<CommandResult> RunCommandAsync<T>(string input, EnvironmentContext ctx, T responseTo)
 		{
 			if (string.IsNullOrWhiteSpace(input))
 			{
-				return new CommandResult(CommandStatus.Error)
+				return new CommandResult(CommandStatus.NoExecution)
 				{
 					ShortReason = "Invalid input",
 					LongReason = "No valid input detected - an empty string cannot be used to run a command."
 				};
+			}
+
+			IEnumerable<CommandMetadata> select = _commands.Where(c => c.Aliases.Any(a => input.ToLowerInvariant().StartsWith(a)));
+			string trigger = select.FirstOrDefault()?.Aliases.FirstOrDefault();
+
+			//Grab the first command with an alias contained in the input
+			//string trigger = _commands.Select(c => c.Aliases.FirstOrDefault(a => input.ToLowerInvariant().StartsWith(a))).FirstOrDefault();
+			if (string.IsNullOrWhiteSpace(trigger))
+			{
+				//Return a NoExecution status if no command is found
+				return new CommandResult(CommandStatus.NoExecution);
 			}
 
 			IEnumerable<CommandMetadata> metadatas = Parser.GetMetadataFromInput(input, trigger, this, out IEnumerable<string> args);
@@ -96,7 +108,11 @@ namespace BotApi.Commands
 			CommandResult result;
 			try
 			{
-				result = await Task.Run(() => (Task<CommandResult>)metadata.ExecutingMethod.Invoke(parseResult.Command, parseResult.Arguments.ToArray())).ConfigureAwait(false);
+				result = await Task.Run(
+					() => (Task<CommandResult>)parseResult.Command.Metadata.ExecutingMethod.Invoke(
+						parseResult.Command, parseResult.Arguments.ToArray()
+					)
+				).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
@@ -135,6 +151,11 @@ namespace BotApi.Commands
 		public IEnumerable<CommandMetadata> GetMetadatas(params string[] aliases)
 		{
 			return _commands.Where(c => c.Aliases.Intersect(aliases).Count() > 0);
+		}
+
+		public IEnumerable<CommandMetadata> GetMetadatas()
+		{
+			return _commands;
 		}
 	}
 }
