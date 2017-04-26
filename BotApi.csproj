@@ -30,6 +30,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'skeddadle-test|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\skeddadle-test\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -44,6 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AsyncEventHandler.cs" />
     <Compile Include="Brain.cs" />
     <Compile Include="CLI\CommandLineParser.cs" />
     <Compile Include="CLI\FlagSet.cs" />
@@ -74,6 +84,8 @@
     <Compile Include="Commands\Permissions\PermissionSet.cs" />
     <Compile Include="IConnectionModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RegexString.cs" />
+    <Compile Include="RegexStringOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

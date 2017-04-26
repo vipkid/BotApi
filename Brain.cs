@@ -69,7 +69,7 @@ namespace BotApi
 		/// <param name="aliases">Aliases used for executing the command</param>
 		/// <param name="exception">Any exceptions thrown while attempting to parse the command type</param>
 		/// <returns></returns>
-		public bool RegisterCommand(Type cmdType, IEnumerable<string> aliases, string description, out CommandException exception) => 
+		public bool RegisterCommand(Type cmdType, IEnumerable<RegexString> aliases, string description, out CommandException exception) => 
 			Registry.RegisterCommand(cmdType, aliases, description, out exception);
 		
 		/// <summary>

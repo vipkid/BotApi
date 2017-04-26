@@ -38,7 +38,7 @@ namespace BotApi.Commands
 		/// <param name="e">CommandException that may occur while parsing the command type</param>
 		/// <param name="cctorArgs">Any constructor arguments used to construct the command</param>
 		/// <returns>true if registration succeeds</returns>
-		public bool RegisterCommand(Type commandType, IEnumerable<string> aliases, string description, out CommandException e, bool cached = true)
+		public bool RegisterCommand(Type commandType, IEnumerable<RegexString> aliases, string description, out CommandException e, bool cached = true)
 		{
 			CommandMetadata metadata;
 			if ((metadata = Parser.RegisterMetadata(commandType, aliases, description, out e)) == null)
@@ -72,12 +72,12 @@ namespace BotApi.Commands
 				};
 			}
 
-			IEnumerable<CommandMetadata> select = _commands.Where(c => c.Aliases.Any(a => input.ToLowerInvariant().StartsWith(a)));
-			string trigger = select.FirstOrDefault()?.Aliases.FirstOrDefault();
 
 			//Grab the first command with an alias contained in the input
-			//string trigger = _commands.Select(c => c.Aliases.FirstOrDefault(a => input.ToLowerInvariant().StartsWith(a))).FirstOrDefault();
-			if (string.IsNullOrWhiteSpace(trigger))
+			IEnumerable<CommandMetadata> select = _commands.Where(c => c.Aliases.Any(a => a.Matches(input.ToLowerInvariant())));
+			RegexString trigger = select.FirstOrDefault()?.Aliases.FirstOrDefault();
+
+			if (trigger == null)
 			{
 				//Return a NoExecution status if no command is found
 				return new CommandResult(CommandStatus.NoExecution);
@@ -138,7 +138,7 @@ namespace BotApi.Commands
 		/// </summary>
 		/// <param name="aliases"></param>
 		/// <returns></returns>
-		public CommandMetadata GetMetadata(params string[] aliases)
+		public CommandMetadata GetMetadata(params RegexString[] aliases)
 		{
 			return _commands.FirstOrDefault(c => c.Aliases.Intersect(aliases).Count() > 0);
 		}
@@ -148,7 +148,7 @@ namespace BotApi.Commands
 		/// </summary>
 		/// <param name="aliases"></param>
 		/// <returns></returns>
-		public IEnumerable<CommandMetadata> GetMetadatas(params string[] aliases)
+		public IEnumerable<CommandMetadata> GetMetadatas(params RegexString[] aliases)
 		{
 			return _commands.Where(c => c.Aliases.Intersect(aliases).Count() > 0);
 		}

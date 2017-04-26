@@ -26,7 +26,7 @@ namespace BotApi.Commands.Interfaces
 		/// <param name="commandType"></param>
 		/// <param name="ex"></param>
 		/// <returns></returns>
-		CommandMetadata RegisterMetadata(Type commandType, IEnumerable<string> aliases, string description, out CommandException ex);
+		CommandMetadata RegisterMetadata(Type commandType, IEnumerable<RegexString> aliases, string description, out CommandException ex);
 
 		/// <summary>
 		/// Registers a converter for converting strings to strongly typed objects
@@ -51,7 +51,7 @@ namespace BotApi.Commands.Interfaces
 		/// <param name="registry"></param>
 		/// <param name="arguments"></param>
 		/// <returns></returns>
-		IEnumerable<CommandMetadata> GetMetadataFromInput(string input, string trigger, CommandRegistry registry, out IEnumerable<string> arguments);
+		IEnumerable<CommandMetadata> GetMetadataFromInput(string input, RegexString trigger, CommandRegistry registry, out IEnumerable<string> arguments);
 
 		/// <summary>
 		/// Attempts to parse a string of input into a result used for executing a command

@@ -22,7 +22,7 @@ namespace BotApi.Commands.Parsing
 			Converters = new Dictionary<Type, IObjectConverter>();
 		}
 
-		public CommandMetadata RegisterMetadata(Type commandType, IEnumerable<string> aliases, string description, out CommandException exception)
+		public CommandMetadata RegisterMetadata(Type commandType, IEnumerable<RegexString> aliases, string description, out CommandException exception)
 		{
 			CommandMetadata metadata;
 			if ((metadata = Verifier.TryVerifyFormat(commandType, aliases, description, out CommandParsingException ex)) == null)
@@ -51,10 +51,10 @@ namespace BotApi.Commands.Parsing
 			return Converters.Remove(type);
 		}
 
-		public IEnumerable<CommandMetadata> GetMetadataFromInput(string input, string trigger, CommandRegistry registry, out IEnumerable<string> arguments)
+		public IEnumerable<CommandMetadata> GetMetadataFromInput(string input, RegexString trigger, CommandRegistry registry, out IEnumerable<string> arguments)
 		{
 			//Remove the command name
-			input = input.Remove(0, trigger.Length);
+			input = trigger.RemoveMatchedString(input);
 			//And explode any other input into arguments
 			arguments = input.Explode();
 
@@ -81,7 +81,7 @@ namespace BotApi.Commands.Parsing
 			if (arguments.Count() > 0 && metadata.HasSubcommands)
 			{
 				//Find the first subcommand with an alias that matches the first argument
-				CommandMetadata subData = metadata.SubcommandMetadata.FirstOrDefault(m => m.Aliases.Contains(arguments.First().ToLowerInvariant()));
+				CommandMetadata subData = metadata.SubcommandMetadata.FirstOrDefault(m => m.Aliases.Any(r => r.Matches(arguments.First().ToLowerInvariant())));
 				if (subData != null)
 				{
 					//Metadata is now the subcommand

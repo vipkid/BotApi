@@ -26,7 +26,7 @@ namespace BotApi.Commands
 		/// <param name="command"></param>
 		/// <param name="ex"></param>
 		/// <returns></returns>
-		public CommandMetadata TryVerifyFormat(Type type, IEnumerable<string> aliases, string description, out CommandParsingException ex)
+		public CommandMetadata TryVerifyFormat(Type type, IEnumerable<RegexString> aliases, string description, out CommandParsingException ex)
 		{
 			if (!typeof(ICommand).IsAssignableFrom(type))
 			{

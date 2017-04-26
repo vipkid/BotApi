@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace BotApi.Commands
 {
@@ -42,7 +43,7 @@ namespace BotApi.Commands
 		/// <summary>
 		/// Aliases the command can be executed with
 		/// </summary>
-		public IEnumerable<string> Aliases { get; private set; }
+		public IEnumerable<RegexString> Aliases { get; private set; }
 		/// <summary>
 		/// Metadata for each subcommand defined on this command
 		/// </summary>
@@ -56,7 +57,7 @@ namespace BotApi.Commands
 			MethodInfo executor,
 			Type type, 
 			int reqArgs,
-			IEnumerable<string> aliases,
+			IEnumerable<RegexString> aliases,
 			string description,
 			Dictionary<ParameterInfo, CommandParameterAttribute> paramData,
 			IEnumerable<CommandMetadata> subcommandMetadata)

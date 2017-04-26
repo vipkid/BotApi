@@ -18,6 +18,6 @@ namespace BotApi.Commands.Interfaces
 		/// <param name="commandType"></param>
 		/// <param name="ex"></param>
 		/// <returns></returns>
-		CommandMetadata TryVerifyFormat(Type commandType, IEnumerable<string> aliases, string description, out CommandParsingException ex);
+		CommandMetadata TryVerifyFormat(Type commandType, IEnumerable<RegexString> aliases, string description, out CommandParsingException ex);
 	}
 }

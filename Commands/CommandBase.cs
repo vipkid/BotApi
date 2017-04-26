@@ -17,7 +17,7 @@ namespace BotApi.Commands
 		/// <summary>
 		/// The list of aliases the command goes by
 		/// </summary>
-		public IEnumerable<string> Aliases => Metadata.Aliases;
+		public IEnumerable<RegexString> Aliases => Metadata.Aliases;
 		/// <summary>
 		/// The object which caused this command to be invoked
 		/// </summary>

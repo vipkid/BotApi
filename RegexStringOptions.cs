@@ -1,0 +1,61 @@
+﻿namespace BotApi
+{
+	/// <summary>
+	/// Options to classify how a <see cref="RegexString"/> behaves
+	/// </summary>
+	public class RegexStringOptions
+	{
+		/// <summary>
+		/// If true, a '^' character is added to the beginning of the regex,
+		/// meaning the match must begin at the start of the input string
+		/// </summary>
+		public bool EnforceMatchAtStartPosition = false;
+		/// <summary>
+		/// If true, a '$' character is added to the end of the regex,
+		/// meaning the match must end at the end of the input string
+		/// </summary>
+		public bool EnforceMatchAtEndPosition = false;
+		/// <summary>
+		/// If true, this RegexString will not be matched with a regex,
+		/// but will use string comparisons instead
+		/// </summary>
+		public bool PlainText = false;
+
+		/// <summary>
+		/// Sets the value of <see cref="PlainText"/>
+		/// </summary>
+		/// <param name="plainText"></param>
+		/// <returns></returns>
+		public RegexStringOptions SetPlainText(bool plainText = true)
+		{
+			PlainText = plainText;
+			return this;
+		}
+
+		/// <summary>
+		/// Sets the value of <see cref="EnforceMatchAtStartPosition"/>
+		/// </summary>
+		/// <param name="matchAtStart"></param>
+		/// <returns></returns>
+		public RegexStringOptions SetMatchAtStart(bool matchAtStart = true)
+		{
+			EnforceMatchAtStartPosition = matchAtStart;
+			return this;
+		}
+
+		/// <summary>
+		/// Sets the value of <see cref="EnforceMatchAtEndPosition"/>
+		/// </summary>
+		/// <param name="matchAtEnd"></param>
+		/// <returns></returns>
+		public RegexStringOptions SetMatchAtEnd(bool matchAtEnd = true)
+		{
+			EnforceMatchAtEndPosition = matchAtEnd;
+			return this;
+		}
+
+		public static RegexStringOptions PlainTextOptions = new RegexStringOptions() { PlainText = true };
+		public static RegexStringOptions MatchStartOptions = new RegexStringOptions() { EnforceMatchAtStartPosition = true };
+		public static RegexStringOptions MatchEndOptions = new RegexStringOptions() { EnforceMatchAtEndPosition = true };
+	}
+}

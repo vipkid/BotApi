@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BotApi.Commands.Attributes
 {
@@ -12,17 +13,33 @@ namespace BotApi.Commands.Attributes
 		/// <summary>
 		/// The phrase used to identify the sub-executor from a command string
 		/// </summary>
-		public IEnumerable<string> SubCommands { get; }
+		public IEnumerable<RegexString> SubCommands { get; }
 
 		/// <summary>
-		/// Creates a new <see cref="CommandSubExecutorAttribute"/> with the given phrase
+		/// Creates a new <see cref="CommandSubExecutorAttribute"/> with the given <see cref="RegexString"/> phrases
 		/// </summary>
 		/// <param name="subCmd"></param>
 		/// <param param name="subCmds"></param>
+		public CommandSubExecutorAttribute(RegexString subCmd, params RegexString[] subCmds)
+		{
+			List<RegexString> subs = new List<RegexString>() { subCmd };
+			subs.AddRange(subCmds);
+			SubCommands = subs;
+		}
+
+		/// <summary>
+		/// Creates a new <see cref="CommandSubExecutorAttribute"/> with the given phrases
+		/// </summary>
+		/// <param name="subCmd"></param>
+		/// <param name="subCmds"></param>
 		public CommandSubExecutorAttribute(string subCmd, params string[] subCmds)
 		{
-			List<string> subs = new List<string>() { subCmd };
-			subs.AddRange(subCmds);
+			List<RegexString> subs = new List<RegexString>() { subCmd };
+			foreach (string sub in subCmds)
+			{
+				subs.Add(sub);
+			}
+
 			SubCommands = subs;
 		}
 	}
