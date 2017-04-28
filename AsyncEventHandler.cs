@@ -3,7 +3,7 @@
 namespace BotApi
 {
 	/// <summary>
-	/// Allows asynchronous event handling
+	/// Represents a method that will asynchronously handle an event when the event provides data.
 	/// </summary>
 	/// <typeparam name="TArgs"></typeparam>
 	/// <param name="sender"></param>

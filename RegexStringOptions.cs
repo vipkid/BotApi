@@ -54,8 +54,17 @@
 			return this;
 		}
 
+		/// <summary>
+		/// Shortcut to <see cref="RegexStringOptions.SetPlainText(bool)"/>
+		/// </summary>
 		public static RegexStringOptions PlainTextOptions = new RegexStringOptions() { PlainText = true };
+		/// <summary>
+		/// Shortcut to <see cref="RegexStringOptions.SetMatchAtStart(bool)"/>
+		/// </summary>
 		public static RegexStringOptions MatchStartOptions = new RegexStringOptions() { EnforceMatchAtStartPosition = true };
+		/// <summary>
+		/// Shortcut to <see cref="RegexStringOptions.SetMatchAtEnd(bool)"/>
+		/// </summary>
 		public static RegexStringOptions MatchEndOptions = new RegexStringOptions() { EnforceMatchAtEndPosition = true };
 	}
 }

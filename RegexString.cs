@@ -29,19 +29,19 @@ namespace BotApi
 			{
 				if (options.EnforceMatchAtStartPosition)
 				{
+					//'^' is the regex modifier to assert that the match must begin at the start of the string
 					pattern = "^" + pattern;
 				}
 				if (options.EnforceMatchAtEndPosition)
 				{
+					//'$' is the regex modifier to assert that the match must end at the end of the string
 					pattern = pattern + "$";
 				}
 
 				_regex = new Regex(pattern);
 			}
-			else
-			{
-				_string = pattern;
-			}
+
+			_string = pattern;
 		}
 
 		/// <summary>
@@ -86,6 +86,11 @@ namespace BotApi
 			}
 		}
 
+		/// <summary>
+		/// Provides an implicit conversion from string to <see cref="RegexString"/>.
+		/// Strings converted in this way use <see cref="RegexStringOptions.MatchStartOptions"/>
+		/// </summary>
+		/// <param name="str"></param>
 		public static implicit operator RegexString(string str)
 		{
 			return new RegexString(str, RegexStringOptions.MatchStartOptions);
@@ -93,11 +98,7 @@ namespace BotApi
 
 		public override string ToString()
 		{
-			if (Options.PlainText)
-			{
-				return _string;
-			}
-			return _regex.ToString();
+			return _string;
 		}
 	}
 }
